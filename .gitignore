@@ -1,0 +1,77 @@
+# ==============================================================================
+# Swift Package Manager
+# ==============================================================================
+.build/
+Packages/
+Package.pins
+
+# Track Package.resolved for application / executable targets to ensure reproducible builds.
+# If this repository ever becomes a standalone reusable library, uncomment the line below:
+# Package.resolved
+
+# SPM Xcode integration user state
+.swiftpm/xcode/
+
+# ==============================================================================
+# Xcode & Apple Build Artifacts
+# ==============================================================================
+build/
+DerivedData/
+*.moved-aside
+*.xcuserstate
+xcuserdata/
+*.xcscmblueprint
+
+# Debug symbols & application bundles
+*.dSYM/
+*.dSYM.zip
+*.app
+*.ipa
+*.pkg
+
+# ==============================================================================
+# macOS System Files
+# ==============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.Spotlight-V100
+.Trashes
+
+# ==============================================================================
+# Environment Variables & Secrets
+# ==============================================================================
+.env
+.env.*
+!.env.example
+
+# ==============================================================================
+# IDEs & Text Editors
+# ==============================================================================
+.idea/
+*.swp
+*~
+*.bak
+
+# Visual Studio Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.vscode/*.local.json
+
+# ==============================================================================
+# AI Assistants & Developer Tooling
+# ==============================================================================
+# Claude Code local settings and worktrees (allow shared team settings)
+.claude/*.local.json*
+.claude/worktrees/
+
+# Antigravity IDE scratch files and ephemeral runs
+.gemini/antigravity-ide/brain/*/scratch/
+
+# Logs
+*.log
