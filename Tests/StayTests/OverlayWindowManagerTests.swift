@@ -23,4 +23,23 @@ struct OverlayWindowManagerTests {
         #expect(panel.collectionBehavior.contains(.fullScreenAuxiliary))
         manager.closeOverlay(for: 303)
     }
+
+    @Test("OverlayPanel applies opacity and animated frame")
+    func testApplyConfiguration() {
+        let manager = OverlayWindowManager.shared
+        let target = TargetWindow(
+            id: 304,
+            pid: 701,
+            title: "Terminal",
+            bundleID: "com.apple.Terminal",
+            bounds: CGRect(x: 50, y: 50, width: 600, height: 400),
+            role: "AXWindow"
+        )
+        let panel = manager.createOverlay(for: target, onClick: {})
+        let newConfig = PeekerConfiguration(mode: .corner(.bottomLeft), opacity: 0.60)
+        panel.applyConfiguration(newConfig, targetFrame: NSRect(x: 20, y: 20, width: 300, height: 200), animated: false)
+        #expect(panel.alphaValue == 0.60)
+        #expect(panel.frame.size.width == 300)
+        manager.closeOverlay(for: 304)
+    }
 }
