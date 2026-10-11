@@ -7,8 +7,12 @@ struct HotkeyServiceTests {
     @Test("Registration and unregistration lifecycle")
     func testHotkeyLifecycle() {
         let hotkey = HotkeyService.shared
-        let success = hotkey.register(keyCode: UInt32(kVK_ANSI_T), modifiers: UInt32(cmdKey | optionKey)) {}
-        #expect(success)
+        let successPin = hotkey.register(keyCode: UInt32(kVK_ANSI_P), modifiers: UInt32(optionKey | shiftKey)) {}
+        let successMode = hotkey.register(keyCode: UInt32(kVK_ANSI_T), modifiers: UInt32(optionKey | shiftKey)) {}
+        let successCorner = hotkey.register(keyCode: UInt32(kVK_ANSI_C), modifiers: UInt32(optionKey | shiftKey)) {}
+        #expect(successPin)
+        #expect(successMode)
+        #expect(successCorner)
         hotkey.unregisterAll()
     }
 }

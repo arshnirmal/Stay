@@ -69,6 +69,27 @@ public final class PinCoordinator: ObservableObject {
         activeSessions.removeValue(forKey: windowID)
     }
 
+    public func toggleActiveMode() {
+        guard let firstSession = activeSessions.values.first else { return }
+        var nextConfig = firstSession.configuration
+        switch nextConfig.mode {
+        case .corner: nextConfig.mode = .inPlace
+        case .inPlace: nextConfig.mode = .corner(.bottomRight)
+        }
+        firstSession.configuration = nextConfig
+        OverlayWindowManager.shared.updateConfiguration(nextConfig, for: firstSession.id)
+    }
+
+    public func cycleActiveCorner() {
+        guard let firstSession = activeSessions.values.first else { return }
+        var nextConfig = firstSession.configuration
+        if case .corner(let corner) = nextConfig.mode {
+            nextConfig.mode = .corner(corner.next)
+            firstSession.configuration = nextConfig
+            OverlayWindowManager.shared.updateConfiguration(nextConfig, for: firstSession.id)
+        }
+    }
+
     public func unpinAll() async {
         let keys = Array(activeSessions.keys)
         for key in keys {
