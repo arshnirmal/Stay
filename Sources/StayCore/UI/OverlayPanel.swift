@@ -1,5 +1,6 @@
 import AppKit
 import AVFoundation
+import CoreMedia
 
 public final class OverlayPanel: NSPanel {
     public let displayLayer = AVSampleBufferDisplayLayer()
@@ -42,5 +43,12 @@ public final class OverlayPanel: NSPanel {
         if let root = self.contentView {
             displayLayer.frame = root.bounds
         }
+    }
+
+    public func renderFrame(_ sampleBuffer: CMSampleBuffer) {
+        if displayLayer.status == .failed {
+            displayLayer.flush()
+        }
+        displayLayer.enqueue(sampleBuffer)
     }
 }
