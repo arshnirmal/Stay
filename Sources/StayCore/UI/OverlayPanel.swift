@@ -3,10 +3,19 @@ import AVFoundation
 import CoreMedia
 
 public final class OverlayPanel: NSPanel {
+    public let target: TargetWindow?
+    public private(set) var configuration: PeekerConfiguration
     public let displayLayer = AVSampleBufferDisplayLayer()
     private var onClick: (() -> Void)?
 
-    public init(frame: NSRect, onClick: (() -> Void)? = nil) {
+    public init(
+        frame: NSRect,
+        target: TargetWindow? = nil,
+        configuration: PeekerConfiguration = PeekerConfiguration(),
+        onClick: (() -> Void)? = nil
+    ) {
+        self.target = target
+        self.configuration = configuration
         self.onClick = onClick
         super.init(
             contentRect: frame,
@@ -19,6 +28,7 @@ public final class OverlayPanel: NSPanel {
         self.isOpaque = false
         self.backgroundColor = .clear
         self.hasShadow = true
+        self.alphaValue = configuration.opacity
 
         let root = NSView(frame: NSRect(origin: .zero, size: frame.size))
         root.wantsLayer = true
@@ -40,6 +50,25 @@ public final class OverlayPanel: NSPanel {
 
     public func updateFrame(_ newFrame: NSRect) {
         self.setFrame(newFrame, display: true)
+        if let root = self.contentView {
+            displayLayer.frame = root.bounds
+        }
+    }
+
+    public func applyConfiguration(_ newConfig: PeekerConfiguration, targetFrame: NSRect, animated: Bool) {
+        self.configuration = newConfig
+        self.alphaValue = newConfig.opacity
+
+        if animated {
+            NSAnimationContext.runAnimationGroup { context in
+                context.duration = 0.25
+                context.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+                self.animator().setFrame(targetFrame, display: true)
+            }
+        } else {
+            self.setFrame(targetFrame, display: true)
+        }
+
         if let root = self.contentView {
             displayLayer.frame = root.bounds
         }
