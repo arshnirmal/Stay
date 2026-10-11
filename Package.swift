@@ -31,7 +31,13 @@ let package = Package(
         .testTarget(
             name: "StayTests",
             dependencies: ["StayCore"],
-            path: "Tests/StayTests"
+            path: "Tests/StayTests",
+            swiftSettings: [
+                .unsafeFlags([
+                    "-load-plugin-library",
+                    "/Library/Developer/CommandLineTools/usr/lib/swift/host/plugins/testing/libTestingMacros.dylib"
+                ])
+            ]
         )
     ]
 )
