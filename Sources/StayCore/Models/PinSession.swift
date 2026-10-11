@@ -6,22 +6,25 @@ public enum InteractionMode: String, Sendable, CaseIterable {
     case clickThrough = "Click-Through"
 }
 
-public final class PinSession: Identifiable, @unchecked Sendable {
+public final class PinSession: Identifiable, ObservableObject, @unchecked Sendable {
     public let id: CGWindowID
     public let target: TargetWindow
     public var opacity: Double
     public var mode: InteractionMode
     public var isStreaming: Bool
+    @Published public var configuration: PeekerConfiguration
 
     public init(
         target: TargetWindow,
         opacity: Double = 1.0,
-        mode: InteractionMode = .smartFocus
+        mode: InteractionMode = .smartFocus,
+        configuration: PeekerConfiguration = PeekerConfiguration()
     ) {
         self.id = target.id
         self.target = target
         self.opacity = opacity
         self.mode = mode
         self.isStreaming = false
+        self.configuration = configuration
     }
 }
