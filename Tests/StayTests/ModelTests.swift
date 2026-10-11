@@ -41,7 +41,7 @@ struct ModelTests {
         #expect(session.id == 202)
         #expect(session.mode == .smartFocus)
         #expect(session.opacity == 1.0)
-        #expect(session.isStreaming == false)
+        #expect(!session.isStreaming)
     }
 
     @Test("PowerState frame rate computation")
