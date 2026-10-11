@@ -10,9 +10,10 @@ public final class OverlayWindowManager {
     private init() {}
 
     public func createOverlay(for target: TargetWindow, onClick: @escaping () -> Void) -> OverlayPanel {
+        let primaryScreenHeight = (NSScreen.screens.first ?? NSScreen.main)?.frame.height ?? 1080
         let frame = NSRect(
             x: target.bounds.origin.x,
-            y: NSScreen.main?.frame.height ?? 1080 - target.bounds.origin.y - target.bounds.height,
+            y: primaryScreenHeight - target.bounds.origin.y - target.bounds.height,
             width: target.bounds.width,
             height: target.bounds.height
         )

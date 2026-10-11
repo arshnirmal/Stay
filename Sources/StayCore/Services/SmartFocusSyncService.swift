@@ -24,6 +24,14 @@ public final class SmartFocusSyncService {
 
     public func register(session: PinSession, engine: CaptureEngine, panel: OverlayPanel) {
         registry[session.id] = Entry(session: session, engine: engine, panel: panel)
+        if let frontmostPID = NSWorkspace.shared.frontmostApplication?.processIdentifier {
+            if frontmostPID == session.target.pid {
+                engine.pause()
+                panel.orderOut(nil)
+            } else {
+                panel.orderFront(nil)
+            }
+        }
     }
 
     public func unregister(windowID: CGWindowID) {
