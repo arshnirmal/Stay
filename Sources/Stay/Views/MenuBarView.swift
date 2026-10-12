@@ -20,11 +20,16 @@ public struct MenuBarView: View {
             Divider()
 
             if coordinator.activeSessions.isEmpty {
-                Text("No windows pinned.\nPress ⌥⌘T to pin active window.")
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 8)
+                VStack(spacing: 4) {
+                    Text("No reference windows pinned.")
+                        .font(.system(size: 12, weight: .medium))
+                    Text("⌥⇧P : Pin / Unpin Active\n⌥⇧T : Toggle 1:1 / Corner\n⌥⇧C : Cycle Corner")
+                        .font(.system(size: 10, design: .monospaced))
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity, alignment: .center)
+                .padding(.vertical, 8)
             } else {
                 ForEach(Array(coordinator.activeSessions.values)) { session in
                     PinnedCardView(session: session) {
@@ -36,7 +41,7 @@ public struct MenuBarView: View {
             Divider()
 
             HStack {
-                Button("Pin Active (⌥⌘T)") {
+                Button("Pin Active (⌥⇧P)") {
                     Task { try? await coordinator.toggleActiveWindow() }
                 }
                 Spacer()

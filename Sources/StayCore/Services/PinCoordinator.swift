@@ -39,7 +39,7 @@ public final class PinCoordinator: ObservableObject {
         guard activeSessions[target.id] == nil else { return }
         let session = PinSession(target: target)
 
-        let overlay = OverlayWindowManager.shared.createOverlay(for: target) {
+        let overlay = OverlayWindowManager.shared.createOverlay(for: target, configuration: session.configuration) {
             // Smart Focus click: bring target app forward
             if let app = NSRunningApplication(processIdentifier: target.pid) {
                 app.activate()
@@ -67,6 +67,27 @@ public final class PinCoordinator: ObservableObject {
         OverlayWindowManager.shared.closeOverlay(for: windowID)
         SmartFocusSyncService.shared.unregister(windowID: windowID)
         activeSessions.removeValue(forKey: windowID)
+    }
+
+    public func toggleActiveMode() {
+        guard let firstSession = activeSessions.values.first else { return }
+        var nextConfig = firstSession.configuration
+        switch nextConfig.mode {
+        case .corner: nextConfig.mode = .inPlace
+        case .inPlace: nextConfig.mode = .corner(.bottomRight)
+        }
+        firstSession.configuration = nextConfig
+        OverlayWindowManager.shared.updateConfiguration(nextConfig, for: firstSession.id)
+    }
+
+    public func cycleActiveCorner() {
+        guard let firstSession = activeSessions.values.first else { return }
+        var nextConfig = firstSession.configuration
+        if case .corner(let corner) = nextConfig.mode {
+            nextConfig.mode = .corner(corner.next)
+            firstSession.configuration = nextConfig
+            OverlayWindowManager.shared.updateConfiguration(nextConfig, for: firstSession.id)
+        }
     }
 
     public func unpinAll() async {
