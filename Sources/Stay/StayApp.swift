@@ -5,15 +5,28 @@ import StayCore
 @main
 struct StayApp: App {
     @StateObject private var coordinator = PinCoordinator.shared
+    @StateObject private var permissions = PermissionService.shared
 
     init() {
+        // Request missing permissions on launch
+        Task { @MainActor in
+            PermissionService.shared.checkPermissions()
+            if !PermissionService.shared.hasAccessibility || !PermissionService.shared.hasScreenRecording {
+                PermissionService.shared.requestAllPermissions()
+            }
+        }
+
         // ⌥⇧P: Pin / Unpin Active Window (kVK_ANSI_P = 0x23)
         _ = HotkeyService.shared.register(
             keyCode: UInt32(kVK_ANSI_P),
             modifiers: UInt32(optionKey | shiftKey)
         ) {
             Task { @MainActor in
-                try? await PinCoordinator.shared.toggleActiveWindow()
+                do {
+                    try await PinCoordinator.shared.toggleActiveWindow()
+                } catch {
+                    NSLog("[Stay] ⌥⇧P pin failed: \(error)")
+                }
             }
         }
 
@@ -23,7 +36,11 @@ struct StayApp: App {
             modifiers: UInt32(cmdKey | optionKey)
         ) {
             Task { @MainActor in
-                try? await PinCoordinator.shared.toggleActiveWindow()
+                do {
+                    try await PinCoordinator.shared.toggleActiveWindow()
+                } catch {
+                    NSLog("[Stay] ⌥⌘T pin failed: \(error)")
+                }
             }
         }
 

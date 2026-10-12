@@ -3,6 +3,7 @@ import StayCore
 
 public struct MenuBarView: View {
     @ObservedObject var coordinator = PinCoordinator.shared
+    @ObservedObject var permissions = PermissionService.shared
 
     public init() {}
 
@@ -15,6 +16,49 @@ public struct MenuBarView: View {
                 Text("\(coordinator.activeSessions.count) Pinned")
                     .font(.system(size: 11))
                     .foregroundColor(.secondary)
+            }
+
+            // Permissions warning if not granted
+            if !permissions.hasAccessibility || !permissions.hasScreenRecording {
+                VStack(alignment: .leading, spacing: 6) {
+                    HStack(spacing: 4) {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.orange)
+                        Text("Permissions Required")
+                            .font(.system(size: 11, weight: .bold))
+                            .foregroundColor(.orange)
+                    }
+
+                    if !permissions.hasAccessibility {
+                        HStack {
+                            Text("Accessibility:")
+                                .font(.system(size: 10))
+                            Spacer()
+                            Button("Grant") {
+                                permissions.promptForAccessibility()
+                                permissions.openSystemSettingsAccessibility()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.mini)
+                        }
+                    }
+
+                    if !permissions.hasScreenRecording {
+                        HStack {
+                            Text("Screen Recording:")
+                                .font(.system(size: 10))
+                            Spacer()
+                            Button("Grant") {
+                                permissions.promptForScreenRecording()
+                                permissions.openSystemSettingsScreenRecording()
+                            }
+                            .buttonStyle(.borderedProminent)
+                            .controlSize(.mini)
+                        }
+                    }
+                }
+                .padding(8)
+                .background(RoundedRectangle(cornerRadius: 6).fill(Color.orange.opacity(0.12)))
             }
 
             Divider()
@@ -42,7 +86,14 @@ public struct MenuBarView: View {
 
             HStack {
                 Button("Pin Active (⌥⇧P)") {
-                    Task { try? await coordinator.toggleActiveWindow() }
+                    Task {
+                        do {
+                            try await coordinator.toggleActiveWindow()
+                        } catch {
+                            NSLog("[Stay] Failed to pin: \(error)")
+                            permissions.checkPermissions()
+                        }
+                    }
                 }
                 Spacer()
                 Button("Unpin All") {
@@ -62,5 +113,8 @@ public struct MenuBarView: View {
         }
         .padding(12)
         .frame(width: 280)
+        .onAppear {
+            permissions.checkPermissions()
+        }
     }
 }

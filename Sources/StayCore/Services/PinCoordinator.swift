@@ -26,7 +26,9 @@ public final class PinCoordinator: ObservableObject {
 
     public func toggleActiveWindow() async throws {
         guard let target = WindowDiscoveryService.shared.getFrontmostTargetWindow() else {
-            return
+            let msg = "No eligible frontmost window found. Ensure Accessibility and Screen Recording permissions are active in System Settings > Privacy & Security."
+            NSLog("[Stay] %@", msg)
+            throw NSError(domain: "StayError", code: 404, userInfo: [NSLocalizedDescriptionKey: msg])
         }
         if activeSessions[target.id] != nil {
             await unpin(windowID: target.id)
